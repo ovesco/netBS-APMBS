@@ -1,61 +1,71 @@
 {% set calendarId = 'reserv-cal-' ~ uniqid() %}
 
-<div class="col-4">
+{% set color = 'gray' %}
+
+<div>
     <div class="card">
         <div class="card-header">
             <h3 class="card-title">{{ reservation.cabane.nom }}</h3>
         </div>
         <div class="card-body">
-            <div class="d-flex">
-                <div class="w-25 font-weight-bold">Nom</div>
-                <div class="flex-grow-1">{{ reservation.prenom }} {{ reservation.nom }}</div>
-            </div>
-            <div class="d-flex">
-                <div class="w-25 font-weight-bold">Email</div>
-                <div class="flex-grow-1">{{ reservation.email }}</div>
-            </div>
-            <div class="d-flex">
-                <div class="w-25 font-weight-bold">Téléphone</div>
-                <div class="flex-grow-1">{{ reservation.phone }}</div>
-            </div>
-            <div class="d-flex">
-                <div class="w-25 font-weight-bold">Unité</div>
-                <div class="flex-grow-1">{{ reservation.unite }}</div>
-            </div>
-            <div class="d-flex">
-                <div class="w-25 font-weight-bold">Description</div>
-                <div class="flex-grow-1">{{ reservation.description }}</div>
-            </div>
-            {% if reservation.conflicts|length > 0 %}
-                {% set acceptedConflicts = reservation.conflicts|filter(it => it.status == 'accepted') %}
-                {% if acceptedConflicts|length > 0 %}
-                    <div class="alert alert-danger">
-                        <div class="p-0">
-                            Cette réservation est en conflit avec une ou plusieurs réservations déjà acceptées:
-                            <ul class="m-0">
-                                {% for accConfit in acceptedConflicts %}
-                                    <li>{{ accConfit.unite }} (du {{ accConfit.start|date('d.m.Y') }} au {{ accConfit.end|date('d.m.Y') }})</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
+            <div class="row">
+                <div class="col-12 col-md-8">
+                    <div class="d-flex mb-1">
+                        <div class="w-25 font-weight-bold">Nom</div>
+                        <div class="flex-grow-1">{{ reservation.prenom }} {{ reservation.nom }}</div>
                     </div>
-                {% endif %}
-                {% set waitingConflict = reservation.conflicts|filter(it => it.status == 'to review') %}
-                {% if waitingConflict|length > 0 %}
-                    <div class="alert alert-warning">
-                        <div class="p-0">
-                            Cette réservation est en conflit avec une ou plusieurs réservations en attente également:
-                            <ul class="m-0">
-                                {% for accConfit in waitingConflict %}
-                                    <li>{{ accConfit.unite }} (du {{ accConfit.start|date('d.m.Y') }} au {{ accConfit.end|date('d.m.Y') }})</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
+                    <div class="d-flex mb-1">
+                        <div class="w-25 font-weight-bold">Email</div>
+                        <div class="flex-grow-1">{{ reservation.email }}</div>
                     </div>
-                {% endif %}
-            {% endif %}
-            <div id="{{ calendarId }}">
-                <v-calendar :attributes="events" is-expanded />
+                    <div class="d-flex mb-1">
+                        <div class="w-25 font-weight-bold">Téléphone</div>
+                        <div class="flex-grow-1">{{ reservation.phone }}</div>
+                    </div>
+                    <div class="d-flex mb-1">
+                        <div class="w-25 font-weight-bold">Unité</div>
+                        <div class="flex-grow-1">{{ reservation.unite }}</div>
+                    </div>
+                    <div class="d-flex mb-1">
+                        <div class="w-25 font-weight-bold">Description</div>
+                        <div class="flex-grow-1">{{ reservation.description }}</div>
+                    </div>
+                    {% if reservation.conflicts|length > 0 %}
+                        {% set waitingConflict = reservation.conflicts|filter(it => it.status == 'to review') %}
+                        {% if waitingConflict|length > 0 %}
+                            {% set color = 'orange' %}
+                            <div class="alert alert-warning">
+                                <div class="p-0">
+                                    Cette réservation est en conflit avec une ou plusieurs réservations en attente également:
+                                    <ul class="m-0">
+                                        {% for accConfit in waitingConflict %}
+                                            <li>{{ accConfit.unite }} (du {{ accConfit.start|date('d.m.Y') }} au {{ accConfit.end|date('d.m.Y') }})</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% set acceptedConflicts = reservation.conflicts|filter(it => it.status == 'accepted') %}
+                        {% if acceptedConflicts|length > 0 %}
+                            {% set color = 'red' %}
+                            <div class="alert alert-danger">
+                                <div class="p-0">
+                                    Cette réservation est en conflit avec une ou plusieurs réservations déjà acceptées:
+                                    <ul class="m-0">
+                                        {% for accConfit in acceptedConflicts %}
+                                            <li>{{ accConfit.unite }} (du {{ accConfit.start|date('d.m.Y') }} au {{ accConfit.end|date('d.m.Y') }})</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <div class="col-12 col-md-4">
+                    <div id="{{ calendarId }}">
+                        <v-calendar :attributes="events" is-expanded />
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -76,7 +86,7 @@
                                 end: new Date("{{ other.end|date("D M d Y H:i:s O") }}"),
                             },
                             highlight: {
-                                color: "{{ other.id == reservation.id ? 'blue' : (other.status == 'to review' ? 'blue' : 'green') }}",
+                                color: "{{ other.id == reservation.id ? color : (other.status == 'to review' ? 'blue' : 'green') }}",
                                 fillMode: "{{ other.id == reservation.id ? "solid" : "light" }}"
                             },
                             order: {{ other.id == reservation.id ? 10 : 0 }},

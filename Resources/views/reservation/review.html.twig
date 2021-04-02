@@ -15,7 +15,7 @@
             {{ registerJs(asset('bundles/netbscore/js/vue.min.js')) }}
             {{ registerJs('https://unpkg.com/v-calendar@2.3.0/lib/v-calendar.umd.min.js') }}
 
-            <div class="row">
+            <div>
                 {% for reservation in reservations %}
                     {% include '@OvescoAPMBS/reservation/reservation_part.html.twig' with {
                         reservation: reservation
