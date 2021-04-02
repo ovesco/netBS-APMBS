@@ -265,4 +265,20 @@ class Reservation {
     {
         $this->cabane = $cabane;
     }
+
+    /**
+     * @return Reservation[]
+     */
+    public function getConflicts() {
+        $reservations = $this->getCabane()->getReservations();
+        $conflicts = [];
+        foreach($reservations as $reservation) {
+            if (($this->start < $reservation->start && $this->end > $reservation->start)
+                || ($this->start < $reservation->end && $this->end > $reservation->end)) {
+                $conflicts[] = $reservation;
+            }
+        }
+
+        return $conflicts;
+    }
 }
