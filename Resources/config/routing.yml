@@ -1,0 +1,9 @@
+ovesco_apmbs:
+  resource: "@OvescoAPMBSBundle/Controller/"
+  type:     annotation
+  prefix:   /netBS/apmbs
+
+ovesco_apmbs_api:
+  resource: "@OvescoAPMBSBundle/ApiController/"
+  type:     annotation
+  prefix:   /api/v1/public/netBS/apmbs

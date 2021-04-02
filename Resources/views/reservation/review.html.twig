@@ -1,0 +1,31 @@
+{% extends '@NetBSCore/layout/backend.layout.twig' %}
+
+{% set title %}Réservations en attente{% endset %}
+
+{% block main %}
+
+    <div class="container">
+        {% include '@NetBSCore/includes/header.include.twig' with {
+            header: "Réservations en attente",
+            subHeader: 'Toutes les réservations en attentee de validation'
+        } %}
+
+        {% if reservations|length > 0 %}
+
+            {{ registerJs(asset('bundles/netbscore/js/vue.min.js')) }}
+            {{ registerJs('https://unpkg.com/v-calendar@2.3.0/lib/v-calendar.umd.min.js') }}
+
+            <div class="row">
+                {% for reservation in reservations %}
+                    {% include '@OvescoAPMBS/reservation/reservation_part.html.twig' with {
+                        reservation: reservation
+                    } %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert-info alert">
+                <p class="m-0">Aucune réservation en attente pour le moment.</p>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
